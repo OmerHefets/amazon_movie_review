@@ -1,3 +1,7 @@
+import pandas as pd
+import data_preprocessing
+
+
 def convert_txt_to_csv(txt_path, csv_path, features_list):
     number_of_features = len(features_list)
     features_and_values = {}
@@ -33,6 +37,12 @@ def write_dictionary_values_to_string_by_order(dictionary, ordered_list):
     line = line[:-1]
     line += '\n'
     return line
+
+
+def text_preprocessing(file_path, features_list, output_file):
+    for chunk in pd.read_csv(file_path, chunksize=10**5, names=features_list):
+        chunk['review/text'] = chunk['review/text'].apply(data_preprocessing.process_text)
+        chunk.to_csv(output_file, mode='a', header=False, index=False)
 
 
 if __name__ == "__main__":

@@ -9,5 +9,5 @@ def split_dataset(file_path, first_split_path, second_split_path, percentage, ch
         chunk['split'] = random_column_for_split
         train_chunk = chunk[chunk.split < (percentage * 100)]
         test_chunk = chunk[chunk.split >= (percentage * 100)]
-        train_chunk.drop(columns=['split']).to_csv(first_split_path, mode='a', header=False)
-        test_chunk.drop(columns=['split']).to_csv(second_split_path, mode='a', header=False)
+        train_chunk.drop(columns=['split']).to_csv(first_split_path, mode='a', header=False, index=False)
+        test_chunk.drop(columns=['split']).to_csv(second_split_path, mode='a', header=False, index=False)

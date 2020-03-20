@@ -8,9 +8,9 @@ from nltk.stem.wordnet import WordNetLemmatizer
 def process_text(text):
     text = switch_exclamation_questionmark_signs(text)
     text = remove_punctuation(text)
-    text = lowercase_capitalization_words(text)
-    text = remove_stop_words(text, download=False)
-    text = normalize_words(text, download=False)
+    # text = lowercase_capitalization_words(text)
+    # text = remove_stop_words(text, download=False)
+    # text = normalize_words(text, download=False)
     return text
 
 
@@ -22,7 +22,7 @@ def switch_exclamation_questionmark_signs(text):
 
 def remove_punctuation(text):
     text = text.replace('<br />', ' ')
-    text = re.sub(r'[^\w\s]', '', text)
+    text = re.sub(r'[^a-zA-Z\s]', '', text)
     return text
 
 
