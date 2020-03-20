@@ -1,16 +1,17 @@
-import re
-
-
 def convert_txt_to_csv(txt_path, csv_path, features_list):
     number_of_features = len(features_list)
     features_and_values = {}
-    with open(txt_path, 'rb') as file, open(csv_path, 'w') as output:
-        for line in file:
-            features_and_values = extract_feature_from_line_to_dict(features_list, line, features_and_values)
+    with open(txt_path, 'r', encoding='ISO-8859-1') as file, open(csv_path, 'w') as output:
+        for line, i in zip(file, range(100000000)):
+            # remove commas from text
+            line_no_commas = line.replace(',', ' ')
+            features_and_values = extract_feature_from_line_to_dict(features_list, line_no_commas, features_and_values)
             if len(features_and_values) == number_of_features:
                 written_line = write_dictionary_values_to_string_by_order(features_and_values, features_list)
                 output.write(written_line)
                 features_and_values = {}
+            if i % 10000000 == 0:
+                print("this is the {0} iteration".format(i))
 
 
 def extract_feature_from_line_to_dict(features_list, line, dictionary):
@@ -35,4 +36,4 @@ def write_dictionary_values_to_string_by_order(dictionary, ordered_list):
 
 
 if __name__ == "__main__":
-    pass
+    convert_txt_to_csv("moviesgz.txt", csv_path="movies_score.csv", features_list=["review/text", "review/score"])
