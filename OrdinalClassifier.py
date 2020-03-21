@@ -12,20 +12,27 @@ class OrdinalClassifier:
                             3: SGDClassifier(loss="log"),
                             4: SGDClassifier(loss="log")}
 
-    def partial_fit(self, data, n_iter, chunks, features_and_y_list):
+    def partial_fit(self, X, y):
         for classifier_index in range(1, 5):
             print("starting classifier target {0}".format(classifier_index))
             clf = self.classifiers[classifier_index]
-            for chunk in pd.read_csv(data, chunksize=chunks, names=features_and_y_list):
-                np.random.seed(42)
-                chunk = chunk.iloc[np.random.permutation(len(chunk))]
-                print(chunk.head)
-                X = chunk[features_and_y_list[:-1]]
-                y = chunk[features_and_y_list[-1:]]
-                X = training_process.feature_extraction_from_text(X, n_features=2 ** 19)
-                print(X.shape)
-                y = training_process.y_for_ordinal_regression(y, target_value=classifier_index)
-                clf.partial_fit(X, y, classes=np.unique(y))
-                print("chunk done")
+            y['after_classification'] = y.iloc[:, 0].apply(lambda x: 1 if x > classifier_index else 0)
+            # y = training_process.y_for_ordinal_regression(y, target_value=classifier_index)
+            clf.partial_fit(X, y['after_classification'], classes=np.unique(y['after_classification']))
             print("finished classifier target {0}".format(classifier_index))
             self.classifiers[classifier_index] = clf
+        return self.classifiers
+
+    def predict(self, X):
+        probabilities = {}
+        total_probabilities = np.array([])
+        for classifier_index in range(1, 5):
+            clf = self.classifiers[classifier_index]
+            probabilities[classifier_index] = clf.predict_proba(X)[:, 1]
+        for class_index in range(1, 6):
+            if class_index == 1:
+                total_probabilities = np.vstack(1 - probabilities[class_index])
+            elif 1 < class_index < 5:
+                total_probabilities = np.column_stack((total_probabilities, (probabilities[class_index - 1] - probabilities[class_index])))
+            elif class_index == 5:
+                total_probabilities = np.column_stack((total_probabilities, (probabilities[class_index - 1])))

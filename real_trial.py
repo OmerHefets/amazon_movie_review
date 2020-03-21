@@ -13,12 +13,14 @@ start = time.time()
 # trials.text_preprocessing('validation_set.csv', ['review/text', 'review/score'], 'validation_set_processed.csv')
 
 
-#process = amazon.AmazonReview('a')
-#print(process.ordinal_classifiers.classifiers)
+process = amazon.AmazonReview('a', ['d'])
+print(process.ordinal_classifier.classifiers)
+print(process.ordinal_classifier.classifiers[1])
+print(process.ordinal_classifiers[1])
 
 
-classifier = ordin.OrdinalClassifier()
-classifier.partial_fit(data='training_set_processed.csv', n_iter=1, chunks=10 ** 5, features_and_y_list=['review/text', 'review/score'])
+#classifier = ordin.OrdinalClassifier()
+#classifier.partial_fit(data='training_set_processed.csv', n_iter=1, chunks=10 ** 5, features_and_y_list=['review/text', 'review/score'])
 
 
 # my code here #
