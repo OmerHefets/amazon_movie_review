@@ -36,3 +36,5 @@ class OrdinalClassifier:
                 total_probabilities = np.column_stack((total_probabilities, (probabilities[class_index - 1] - probabilities[class_index])))
             elif class_index == 5:
                 total_probabilities = np.column_stack((total_probabilities, (probabilities[class_index - 1])))
+        results = list(np.argmax(total_probabilities, axis=1))
+        return [x+1 for x in results]

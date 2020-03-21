@@ -3,7 +3,9 @@ import pandas as pd
 import numpy as np
 import pickle
 import training_process
+import estimate_model
 from sklearn.multiclass import OneVsRestClassifier
+from sklearn.metrics import accuracy_score
 from sklearn.svm import SVC
 
 
@@ -47,11 +49,18 @@ class AmazonReview:
                 self.ordinal_classifiers[classifier_index] = pickle.load(file)
 
     def evaluate_models(self, chunks):
+        total_examples = 0
+        correct_ordinal = 0
         for chunk in pd.read_csv("validation_set_processed.csv", chunksize=chunks, names=self.features_and_y_list):
+            total_examples += len(chunk)
             X = chunk[self.features_and_y_list[:-1]]
-            y = chunk[self.features_and_y_list[-1:]]
+            y = chunk[self.features_and_y_list[-1:]].astype('int32')
             X = training_process.feature_extraction_from_text(X, n_features=2 ** 19)
-            self.ordinal_classifier.predict(X)
+            y_pred = self.ordinal_classifier.predict(X)
+            correct_ordinal += accuracy_score(y, y_pred, normalize=False)
+            # estimate_model.display_confusion_matrix(y, y_pred, labels=[1, 2, 3, 4, 5])
+        acc = correct_ordinal / total_examples
+        print("the accuracy is: {0}".format(acc))
 
 
 if __name__ == "__main__":
